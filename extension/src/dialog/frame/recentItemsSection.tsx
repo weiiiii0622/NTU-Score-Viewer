@@ -1,6 +1,8 @@
-import { History } from "../../api/storage";
+import { History, getStorage, setStorage } from "../../api/storage";
 import { ItemList, ItemProps } from './itemList';
 import { ItemOnClickProps } from './dialog';
+import { IconPlaylistX } from "@tabler/icons-react";
+import { Button } from "./lib/button";
 
 
 export function RecentItemsSection({
@@ -22,7 +24,15 @@ export function RecentItemsSection({
                 count: classCount, course, type: 'recent',
                 onClick: itemOnClickFactory(
                     { classCount, course }
-                )
+                ),
+                remove() {
+                    getStorage('histories').then(histories => {
+                        histories = histories?.filter(
+                            h => JSON.stringify(h.course) !== JSON.stringify(course)
+                        );
+                        setStorage({ histories });
+                    })
+                }
             };
         })
 
@@ -74,10 +84,33 @@ export function RecentItemsSection({
     //     return () => { console.log('cancel'); cancel = true };
     // }, [histories]);
 
+    function clearAll() {
+        setStorage({ 'histories': [] });
+    }
+
 
     return <>
         <ItemList
-            title="最近搜尋"
+            title={
+                <div className=" flex  justify-between items-center">
+                    最近搜尋
+                    <button
+                        onClick={clearAll}
+                        className=" rounded flex justify-center items-center w-7  cursor-pointer  bg-transparent aspect-square  hover:bg-[#d9d9d9]/[.5]  border border-solid border-[#bbbbbb]/[.5] shadow-sm"><IconPlaylistX {...{
+                            size: 16,
+                            color: '#717171',
+                            stroke: 1.5,
+                        }} />
+                    </button>
+                    {/* <Button variant={'outline'} onClick={clearAll}>
+                        <IconPlaylistX {...{
+                            size: 20,
+                            color: '#717171',
+                            stroke: 1.5,
+                        }} />
+                    </Button> */}
+                </div>
+            }
             items={items}
         />
     </>

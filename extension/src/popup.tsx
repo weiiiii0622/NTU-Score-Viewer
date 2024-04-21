@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 
 import Avatar from '@mui/material/Avatar';
@@ -18,13 +18,14 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import LoginIcon from '@mui/icons-material/Login';
 import MenuIcon from '@mui/icons-material/Menu';
 import ReplayIcon from '@mui/icons-material/Replay';
+import BugReportIcon from '@mui/icons-material/BugReport';
 import SearchIcon from '@mui/icons-material/Search';
 
 import { RegisterPage } from "./components/registerPage";
 import { SearchPage } from "./components/searchPage";
 
 
-import { removeStorage, sendRuntimeMessage } from "./api";
+import { removeStorage, sendRuntimeMessage, sendTabMessage } from "./api";
 import { OpenAPI } from "./client";
 import { getDataFromURL, injectContentScriptIfNotRunning } from "./utils";
 import { AdminAvatarWithToolTip } from "./components/adminAvatar";
@@ -38,6 +39,16 @@ OpenAPI['BASE'] = APP_URL
 /* -------------------------------- Component ------------------------------- */
 
 const Popup = () => {
+
+   useEffect(() => {
+      let canceled = false;
+      chrome.tabs.query(({ active: true })).then(([tab]) => {
+         if (!canceled)
+            sendTabMessage(tab.id!, 'openPopup', {});
+      })
+      return () => { canceled = true; }
+   }, [])
+
 
    const [reset, setReset] = useState<boolean>(false);
    const [page, setPage] = useState<number>(0);
@@ -128,12 +139,15 @@ const Popup = () => {
                         </ListItemIcon>
                         註冊
                      </MenuItem>
-                     <MenuItem onClick={async () => {
+                     {/* <MenuItem onClick={async () => {
                         // todo: let user modify these
                         reportIssue('Issue from popup', 'popup');
                      }}>
+                        <ListItemIcon>
+                           <BugReportIcon fontSize="small" />
+                        </ListItemIcon>
                         回報問題
-                     </MenuItem>
+                     </MenuItem> */}
                      {/* <MenuItem onClick={() => handleClose(1)}>
                         <ListItemIcon>
                            <SearchIcon fontSize="small" />
@@ -276,4 +290,5 @@ root.render(
 
 chrome.tabs.query(({ active: true })).then(([tab]) => {
    injectContentScriptIfNotRunning(tab.id!);
+   // sendTabMessage(tab.id!, 'openPopup', {});
 })

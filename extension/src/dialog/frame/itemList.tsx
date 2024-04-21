@@ -1,12 +1,12 @@
 
 
 import { CourseBase } from "../../client";
-import { IconBook2, IconHistory, TablerIconsProps } from '@tabler/icons-react';
-import { ScrollArea } from "../../../@/components/ui/scroll-area";
+import { IconBackspace, IconBook2, IconHistory, IconX, TablerIconsProps } from '@tabler/icons-react';
+import { ReactNode } from "react";
 
 
 export type ItemListProps = {
-    title: string,
+    title: ReactNode,
     items: ItemProps[],
 
     // todo: collapse
@@ -16,15 +16,22 @@ export function ItemList(props: ItemListProps) {
     const { title, items } = props;
 
     return <div className="w-full">
-        <h4
-            className="ml-2 text-xs text-[#a6a6a6] mb-2 font-semibold"
-        //onClick={() => { console.log('h4') }}
-        >
-            {title}
-        </h4>
+        <div className="mx-2 mb-2">
+            {typeof title === 'string'
+                ? <h4
+                    className="text-sm text-[#a6a6a6]  font-semibold"
+                //onClick={() => { console.log('h4') }}
+                >
+                    {title}
+                </h4>
+                : <>
+                    {title}
+                </>
+            }
+        </div>
         {items.length ?
             <ul
-                className="flex flex-col items-stretch"
+                className=" flex flex-col items-stretch"
             >
                 {
                     items.map((itemProp, i) => (
@@ -47,11 +54,12 @@ export type ItemProps = {
     course: CourseBase;
     count: number;
     onClick: () => void;
+    remove?: () => void;
 }
 
 // todo: action: pin, remove
 export function Item(props: ItemProps) {
-    const { type, course, count, onClick } = props;
+    const { type, course, count, onClick, remove } = props;
 
     // console.log(onClick);
 
@@ -66,7 +74,7 @@ export function Item(props: ItemProps) {
     // todo: add space between en & zh
 
     return <li
-        className=' hover:cursor-pointer justify-between rounded-md  flex flex-row p-2 m-0 hover:bg-[#dfdfdf] hover:bg-opacity-[.40]'
+        className=' [&_[data-show=onhover]]:invisible  [&:hover_[data-show=onhover]]:visible hover:cursor-pointer justify-between rounded-md  flex flex-row p-2 m-0 hover:bg-[#dfdfdf] hover:bg-opacity-[.40] '
         onClick={onClick}
     >
         <div className="flex flex-row items-center p-0 m-0">
@@ -79,9 +87,18 @@ export function Item(props: ItemProps) {
             <span className="mr-1 align-middle text-[#717171] text-sm"> {course.title} </span>
             <span className="align-middle text-[#cccccc] text-xs">{course.id1}</span>
         </div>
-        <div className=" text-[#717171] text-xs align-middle flex flex-row items-center">
-            {count} 個班次
-        </div>
+        {type === 'normal'
+            ? <div className=" text-[#717171] text-xs align-middle flex flex-row items-center">
+                {count} 個班次
+            </div>
+            : <span className=" w-6 h-6 before:absolute before:content-[''] relative before:bg-transparent before:block before:rounded hover:cursor-pointer hover:before:bg-[#999999]/[.3]   before:w-6 before:h-6 flex justify-center items-center" data-show="onhover" onClick={(e) => {
+                if (remove)
+                    remove();
+                e.stopPropagation()
+            }}>
+                <IconBackspace {...iconProps} />
+            </span>
+        }
     </li>
 }
 

@@ -2,6 +2,7 @@
     "compilerOptions": {
         "strict": true,
         "target": "es6",
+        "jsxImportSource": "@emotion/react",
         "moduleResolution": "bundler",
         "module": "ES2022",
         "esModuleInterop": true,

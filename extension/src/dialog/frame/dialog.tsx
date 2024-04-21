@@ -2,7 +2,6 @@
  * Found out chrome.sidePanel is actually more suitable for this LOL 🤡
  */
 import { ErrorBoundary } from "react-error-boundary";
-import { } from './foo'
 
 import React, { ReactNode, forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import { History, getStorage, setStorage } from "../../api/storage";
@@ -14,6 +13,7 @@ import { IconDots, IconPlaylistX, IconSearch, IconX } from '@tabler/icons-react'
 import { ScrollArea, ScrollBar } from "./lib/scroll-area";
 
 import "../../style.css";
+import "../../preflight.css"
 import { createRoot } from "react-dom/client";
 import { getSortedCourses, isRecent } from "../utils";
 import { animated, config, useSpring } from "@react-spring/web";
@@ -375,11 +375,15 @@ export function Dialog({ }: DialogProps) {
    }
 
    /* ------------------------------- Input Focus ------------------------------ */
+   const focused = useRef(false);
    const inputRef = useRef<HTMLInputElement>(null);
    useEffect(() => {
-      if (inputRef.current)
+      console.log('current', inputRef.current)
+      if (inputRef.current && !focused.current) {
+         focused.current = true;
          inputRef.current.focus();
-   }, [inputRef])
+      }
+   });
 
    /* ---------------------------------- Auth ---------------------------------- */
 
@@ -388,6 +392,7 @@ export function Dialog({ }: DialogProps) {
    /* ----------------------------- Page Animation ----------------------------- */
 
    const [pageIdx, setPageIdx] = useState(0);
+
 
    /* --------------------------------- Render --------------------------------- */
 
@@ -482,6 +487,7 @@ export function Dialog({ }: DialogProps) {
                   <SearchInput
                      className="mx-2 mb-6 mr-6"
                      keyword={rawKeyword} setKeyword={setRawKeyword}
+                     ref={inputRef}
                   />
                   {contentLoading
                      ? <Loading />
@@ -538,8 +544,8 @@ export function Dialog({ }: DialogProps) {
  * Handling horizontal spacing & overflow of pages.
  */
 function InnerContainer({ children, pageIdx }: { children: ReactNode[], pageIdx: number }) {
-   return <div className="box-border flex flex-row w-full h-full p-4 pt-8 pr-0">
-      <div className="w-full overflow-hidden ">
+   return <div className="box-border flex flex-row w-full h-full p-4 pt-8 pr-0 pb-0">
+      <div className="w-full overflow-hidden [&>*]:bg-red ">
          <div className="box-border flex flex-row items-stretch w-full h-full"
             style={{
                transform: `translateX(${-pageIdx * 100}%)`,
@@ -591,7 +597,7 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>((props: Searc
 export function CloseBtn({ onClick, className, ...props }: { onClick: () => void } & React.ComponentProps<'span'>) {
    return <span
       className={cn(
-         " hover:cursor-pointer aspect-square h-6 flex justify-center items-center hover:bg-[#d9d9d9] rounded-full",
+         " hover:cursor-pointer aspect-square h-7 flex justify-center items-center hover:bg-[#d9d9d9] rounded-full",
          className
       )}
       onClick={onClick}

@@ -1,0 +1,12 @@
+name: Ping Server
+on:
+  schedule:
+    - cron: "*/1 * * * *"
+
+jobs:
+  ping-server:
+    runs-on: ubuntu-latest
+    steps:
+      - run: curl ${{env.URL}}/
+        env:
+          URL: https://ntu-grade-viewer-app.onrender.com

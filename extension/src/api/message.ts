@@ -30,6 +30,10 @@ type TabMessageMap = {
         msg: {};
         response: void;
     };
+    openPopup: {
+        msg: {};
+        response: void;
+    }
 };
 type TabAction = keyof TabMessageMap;
 export type { TabMessageMap, TabAction };
@@ -90,6 +94,10 @@ type RuntimeMessageMap = RuntimeMessageServiceMap & {
         msg: undefined;
         response: void;
     };
+    injectGradePage: {
+        msg: undefined;
+        response: void;
+    };
     // scheduleRedirectCharts: {
     //     msg: undefined;
     //     response: void;
@@ -122,6 +130,7 @@ function isTabAction(action: string): action is TabAction {
         dialog: 0,
         snackBar: 0,
         submitPage: 0,
+        openPopup: 0,
     };
     return Object.keys(actionMap).indexOf(action) !== -1;
 }

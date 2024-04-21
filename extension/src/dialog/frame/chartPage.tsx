@@ -152,7 +152,7 @@ export function ChartPage(props: ChartPageProps) {
 
    // todo: (opt.) handle too long title 
 
-   return <div className="flex flex-col h-full" >
+   return <div className="flex flex-col h-full pr-4" >
       <header className="flex flex-row items-center w-full gap-2 mb-6" >
          <IconChevronLeft size={24} stroke={1.8} color="#4e4e4e"
             onClick={goBack}
@@ -302,9 +302,9 @@ export function InnerChartPage(props: Pick<ChartPageProps, 'defaultChartType' | 
                <div className="align-middle ">
                   {semester}
                </div>
-               {!activeGrade.solid && <div className="flex items-center justify-center ml-1 ">
+               {!activeGrade.solid && <div className="flex items-center justify-center ml-1   -translate-y-[1px] ">
                   <TooltipProvider>
-                     <Tooltip delayDuration={300}>
+                     <Tooltip delayDuration={150}>
                         <TooltipTrigger>
                            <IconInfoCircle size={20} stroke={1.5} color="#909090" />
                         </TooltipTrigger>
@@ -360,7 +360,7 @@ function Btn({ dir, ...props }: React.ComponentProps<'button'>
    return <button
       className={clsx(
          " shadow-sm border-solid border-[1.5px] border-[#bbbbbb] w-6 h-6 flex items-center justify-center rounded",
-         !disabled ? " hover:bg-[#e5e5e5]" : 'opacity-60 cursor-auto',
+         !disabled ? " hover:bg-[#e5e5e5]" : 'opacity-60  cursor-not-allowed',
       )}
       {...props}>
 

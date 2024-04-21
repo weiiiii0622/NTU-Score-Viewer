@@ -17,7 +17,8 @@ module.exports = {
       background: path.join(srcDir, "background.tsx"),
       content_script: path.join(srcDir, "content_script.tsx"),
       dialog: path.join(srcDir, "dialog/frame/dialog.tsx"),
-      NTUCool: path.join(srcDir, "NTUCool.tsx"),
+      NTUCool: path.join(srcDir, "NTUCool/index.tsx"),
+      gradePage: path.join(srcDir, "gradePage.tsx"),
       // content_script_popup: path.join(srcDir, "content_script_popup.tsx"),
    },
    output: {
@@ -36,8 +37,10 @@ module.exports = {
       rules: [
          {
             test: /\.tsx?$/,
+            // use: "ts-loader",
             use: "ts-loader",
             exclude: /node_modules/,
+
          },
          {
             test: /\.css$/i,
@@ -45,6 +48,21 @@ module.exports = {
             use: ["style-loader", "css-loader", "postcss-loader"],
             exclude: /node_modules/,
          },
+         {
+            test: /\.(?:js|mjs|cjs)$/,
+            exclude: /node_modules/,
+            use: {
+               loader: 'babel-loader',
+               options: {
+                  presets: [
+                     ['@babel/preset-env', { targets: "defaults" }]
+                  ]
+               }
+            }
+         },
+         { test: /\.png$/, use: 'url-loader?mimetype=image/png' },
+         { test: /\.jpg$/, use: 'url-loader?mimetype=image/jpg' },
+
       ],
    },
    resolve: {

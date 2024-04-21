@@ -21,6 +21,7 @@ function initIndicators() {
       'dialog': 'pending',
       'snackBar': 'pending',
       'submitPage': 'pending',
+      'openPopup': 'pending',
    };
    Object.entries(listenerStates).forEach(([k, v]) => {
       window[key].setAttribute(k, v);
@@ -57,8 +58,8 @@ addMessageListener('snackBar', (msg: ISnackBarProps) => {
 
 async function NTUCoolFeature() {
    console.log(window.location.href.endsWith('?charts'))
-   if (window.location.href.endsWith('?charts'))
-      document.body.querySelector<HTMLElement>('#application')!.style.visibility = 'hidden';
+   // if (window.location.href.endsWith('?charts'))
+   //    document.body.querySelector<HTMLElement>('#application')!.style.visibility = 'hidden';
    console.log("NTUCool")
    sendRuntimeMessage('injectNTUCool', undefined);
 }
@@ -207,3 +208,13 @@ function registerFeature(fn: () => void, pattern: string | RegExp) {
 
 console.log('content')
 registerFeature(searchPageFeature, "https://course.ntu.edu.tw/search/")
+
+
+function gradePageFeature() {
+   sendRuntimeMessage('injectGradePage', undefined);
+}
+registerFeature(gradePageFeature, "https://if190.aca.ntu.edu.tw/graderanking");
+
+
+// no-op
+addMessageListener('openPopup', () => { });

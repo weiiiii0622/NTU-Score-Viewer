@@ -162,18 +162,7 @@ async function openDialog(tab: chrome.tabs.Tab, selection: string = '') {
 chrome.commands.onCommand.addListener(async (command, tab) => {
    openDialog(tab)
 
-   chrome.notifications.create("new-notification", {
-      iconUrl: "http://www.google.com/favicon.ico",
-      type: 'list',
-      title: 'Primary Title',
-      message: 'Primary message to display',
-      priority: 1,
-      items: [{ title: 'Item1', message: 'This is item 1.' },
-      { title: 'Item2', message: 'This is item 2.' },
-      { title: 'Item3', message: 'This is item 3.' }]
-   }, () => {
-      console.log("notification",)
-   })
+
    // return;
    // setTimeout(() => {
    //    chrome.scripting.executeScript({
@@ -188,8 +177,11 @@ chrome.commands.onCommand.addListener(async (command, tab) => {
 /* ------------------------------- Capture Tab ------------------------------ */
 
 async function captureTab() {
-   const dataURL = await chrome.tabs.captureVisibleTab();
-   return getDataFromURL(dataURL);
+   return new Promise<string | null>(res => {
+      chrome.tabs.captureVisibleTab().then((dataURL) => {
+         res(getDataFromURL(dataURL))
+      });
+   })
 }
 
 addMessageListener('captureTab', async () => {
@@ -198,6 +190,8 @@ addMessageListener('captureTab', async () => {
 
 
 chrome.runtime.onInstalled.addListener(async () => {
+
+   return;
 
    chrome.notifications.create("new-notification", {
       iconUrl: "http://www.google.com/favicon.ico",
@@ -223,6 +217,16 @@ addMessageListener('injectNTUCool', (_, sender) => {
 })
 
 
+
+addMessageListener('injectGradePage', (_, sender) => {
+   console.log('hi')
+   chrome.scripting.executeScript({
+      target: { tabId: sender.tab?.id! }, files: [
+         'js/gradePage.js'
+      ]
+   })
+})
+
 addMessageListener('getTabId', async (_, sender) => {
    // (await getStorage('redirectChartIds'))?.add(sender.tab!.id!);
    return sender.tab!.id!;
@@ -245,3 +249,33 @@ chrome.runtime.onInstalled.addListener(async () => {
    if (!res)
       setStorage({ 'hasShownNTUCoolTour': false })
 })
+
+
+// todo: omnibox
+// chrome.omnibox.onInputStarted.addListener(function () {
+//    console.log('💬 onInputStarted');
+
+//    chrome.omnibox.setDefaultSuggestion({
+//       description:
+//          "Here is a default <dim>dim</dim> <match>suggestion</match>. <url>It's <match>url</match> here</url>"
+//    });
+// });
+
+
+// chrome.omnibox.onInputChanged.addListener(function (text, suggest) {
+//    console.log('✏️ onInputChanged: ' + text);
+//    suggest([
+//       { content: text + ' one', description: 'the first one', deletable: true },
+//       {
+//          content: text + ' number two',
+//          description: 'the second entry',
+//          deletable: true
+//       }
+//    ]);
+// });
+
+const TUTORIAL_URL = 'https://weiiiii0622.github.io/NTU-Grade-Viewer/Tutorial/'
+chrome.runtime.onInstalled.addListener((details) => {
+   if (details.reason === 'install')
+      chrome.tabs.create({ url: TUTORIAL_URL, active: true })
+});
